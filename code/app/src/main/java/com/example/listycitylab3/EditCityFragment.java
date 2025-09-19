@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -21,7 +20,6 @@ public class EditCityFragment extends DialogFragment {
         Bundle args = new Bundle();
         args.putSerializable(ARG_CITY, city);
         args.putInt(ARG_POSITION, position);
-
         EditCityFragment fragment = new EditCityFragment();
         fragment.setArguments(args);
         return fragment;
@@ -30,7 +28,6 @@ public class EditCityFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-
         View view = LayoutInflater.from(requireContext())
                 .inflate(R.layout.fragment_edit_city, null);
 
@@ -47,20 +44,15 @@ public class EditCityFragment extends DialogFragment {
         }
 
         return new AlertDialog.Builder(requireContext())
-                .setTitle("Edit City")
+                .setTitle("Edit a City")
                 .setView(view)
                 .setNegativeButton("Cancel", (d, w) -> dismiss())
                 .setPositiveButton("OK", (d, w) -> {
-
                     String newName = nameEt.getText().toString().trim();
                     String newProv = provEt.getText().toString().trim();
-
-
                     if (TextUtils.isEmpty(newName) || TextUtils.isEmpty(newProv)) return;
-
                     if (getActivity() instanceof MainActivity) {
-                        ((MainActivity) getActivity())
-                                .applyCityEdit(position, newName, newProv);
+                        ((MainActivity) getActivity()).applyCityEdit(position, newName, newProv);
                     }
                 })
                 .create();

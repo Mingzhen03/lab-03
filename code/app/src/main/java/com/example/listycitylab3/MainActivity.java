@@ -1,64 +1,55 @@
 package com.example.listycitylab3;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AddCityFragment.AddCityDialogListener {
 
     private ArrayList<City> dataList;
-    private ArrayAdapter<City> cityAdapter;
     private ListView cityList;
+    private CityArrayAdapter cityAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        seedData();
+        String[] cities = { "Edmonton", "Vancouver", "Toronto" };
+        String[] provinces = { "AB", "BC", "ON" };
+
+        dataList = new ArrayList<>();
+        for (int i = 0; i < cities.length; i++) {
+            dataList.add(new City(cities[i], provinces[i]));
+        }
 
         cityList = findViewById(R.id.city_list);
-        cityAdapter = new ArrayAdapter<>(
-                this,
-                R.layout.content,
-                R.id.content_view,
-                dataList
-        );
+        cityAdapter = new CityArrayAdapter(this, dataList);
         cityList.setAdapter(cityAdapter);
+
+        findViewById(R.id.button_add_city).setOnClickListener(v ->
+                new AddCityFragment().show(getSupportFragmentManager(), "  Add a City  "));
 
         cityList.setOnItemClickListener((parent, view, position, id) -> {
             City selected = dataList.get(position);
             EditCityFragment.newInstance(selected, position)
-                    .show(getSupportFragmentManager(), "EditCityFragment");
+                    .show(getSupportFragmentManager(), "  Edit a City  ");
         });
     }
 
-    private void seedData() {
-        dataList = new ArrayList<>();
-        dataList.add(new City("Edmonton", "AB"));
-        dataList.add(new City("Calgary", "AB"));
-        dataList.add(new City("Vancouver", "BC"));
-        dataList.add(new City("Toronto", "ON"));
-        dataList.add(new City("Los Angeles", "CA"));
-        dataList.add(new City("Denver", "CO"));
-        dataList.add(new City("Hamilton", "ON"));
-        dataList.add(new City("Banff", "AB"));
+    @Override
+    public void addCity(City city) {
+        cityAdapter.add(city);
+        cityAdapter.notifyDataSetChanged();
     }
 
     public void applyCityEdit(int position, String newName, String newProv) {
-        if (position < 0 || position >= dataList.size()) {
-            Toast.makeText(this, "Invalid position", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (position < 0 || position >= dataList.size()) return;
         City c = dataList.get(position);
         c.setName(newName);
         c.setProvince(newProv);
-
         cityAdapter.notifyDataSetChanged();
     }
 }
+
